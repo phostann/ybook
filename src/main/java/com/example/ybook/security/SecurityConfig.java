@@ -3,6 +3,7 @@ package com.example.ybook.security;
 import com.example.ybook.common.ApiCode;
 import com.example.ybook.common.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,9 +47,11 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             writeJson(response, ApiResponse.error(ApiCode.UNAUTHORIZED));
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                             writeJson(response, ApiResponse.error(ApiCode.FORBIDDEN));
                         }))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -63,7 +66,6 @@ public class SecurityConfig {
     private void writeJson(jakarta.servlet.http.HttpServletResponse response, ApiResponse<?> body) throws IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(200);
         new ObjectMapper().writeValue(response.getWriter(), body);
     }
 }

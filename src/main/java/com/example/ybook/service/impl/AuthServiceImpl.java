@@ -11,6 +11,7 @@ import com.example.ybook.service.AuthService;
 import com.example.ybook.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,9 +46,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequestDTO request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
+        } catch (AuthenticationException ex) {
+            // 统一返回清晰的业务错误提示，避免 500
+            throw new BizException(ApiCode.BAD_REQUEST, "用户名或密码错误");
+        }
         UserDetails principal = (UserDetails) authentication.getPrincipal();
         UserEntity entity = userService.lambdaQuery().eq(UserEntity::getUsername, principal.getUsername()).one();
         if (entity != null && "0".equals(entity.getStatus())) {
