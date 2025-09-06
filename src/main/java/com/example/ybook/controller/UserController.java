@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 /**
  * <p>
  * 用户控制器
@@ -22,6 +27,8 @@ import java.util.List;
  * @author 柒
  * @since 2025-09-03 21:57:34
  */
+@Tag(name = "用户管理接口", description = "用户的增删改查接口")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -33,6 +40,7 @@ public class UserController {
      * 获取用户列表
      */
     @GetMapping
+    @Operation(summary = "获取用户列表", description = "返回所有用户的精简信息列表")
     public ApiResponse<List<UserVO>> listUsers() {
         return ApiResponse.success(userService.listAllUsers());
     }
@@ -41,8 +49,11 @@ public class UserController {
      * 分页获取用户列表
      */
     @GetMapping("/page")
+    @Operation(summary = "分页获取用户列表", description = "按页返回用户列表")
     public ApiResponse<PageResult<UserVO>> pageUsers(
+            @Parameter(description = "当前页码", example = "1")
             @RequestParam(defaultValue = "1") long current,
+            @Parameter(description = "每页数量", example = "10")
             @RequestParam(defaultValue = "10") long size) {
         Page<UserEntity> page = new Page<>(current, size);
         return ApiResponse.success(userService.pageUsers(page));
@@ -52,6 +63,7 @@ public class UserController {
      * 获取用户详情
      */
     @GetMapping("/{id}")
+    @Operation(summary = "获取用户详情", description = "根据用户ID获取用户详细信息")
     public ApiResponse<UserVO> getUserById(@PathVariable Long id) {
         return ApiResponse.success(userService.getUserById(id));
     }
@@ -60,6 +72,7 @@ public class UserController {
      * 创建用户
      */
     @PostMapping
+    @Operation(summary = "创建用户", description = "创建新用户并返回其信息")
     public ApiResponse<UserVO> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
         return ApiResponse.success(userService.createUser(userCreateDTO));
     }
@@ -68,6 +81,7 @@ public class UserController {
      * 更新用户
      */
     @PatchMapping("/{id}")
+    @Operation(summary = "更新用户", description = "根据用户ID更新用户的部分信息")
     public ApiResponse<UserVO> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         return ApiResponse.success(userService.updateUser(id, userUpdateDTO));
     }
@@ -76,6 +90,7 @@ public class UserController {
      * 删除用户
      */
     @DeleteMapping("/{id}")
+    @Operation(summary = "删除用户", description = "根据用户ID删除用户")
     public ApiResponse<Boolean> deleteUser(@PathVariable Long id) {
         return ApiResponse.success(userService.deleteUser(id));
     }
