@@ -82,19 +82,7 @@ public class UserController {
         return com.example.ybook.common.ApiResponse.success(userService.getUserById(id));
     }
 
-    /**
-     * 创建用户
-     */
-    @PostMapping
-    @Operation(summary = "创建用户", description = "创建新用户并返回其信息")
-    @ApiResponses({
-            @ApiResponse(responseCode = "401", description = "未认证或令牌无效"),
-            @ApiResponse(responseCode = "403", description = "无权限"),
-            @ApiResponse(responseCode = "422", description = "参数校验失败")
-    })
-    public com.example.ybook.common.ApiResponse<UserVO> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
-        return com.example.ybook.common.ApiResponse.success(userService.createUser(userCreateDTO));
-    }
+    // 创建用户接口已迁移至 /api/auth/register 并对外放行
 
     /**
      * 更新用户

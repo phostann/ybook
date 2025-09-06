@@ -4,11 +4,13 @@ import com.example.ybook.common.ApiCode;
 import com.example.ybook.dto.ChangePasswordRequestDTO;
 import com.example.ybook.dto.LoginRequestDTO;
 import com.example.ybook.dto.LoginResponse;
+import com.example.ybook.dto.UserCreateDTO;
 import com.example.ybook.entity.UserEntity;
 import com.example.ybook.exception.BizException;
 import com.example.ybook.security.JwtService;
 import com.example.ybook.service.AuthService;
 import com.example.ybook.service.UserService;
+import com.example.ybook.vo.UserVO;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -94,5 +96,11 @@ public class AuthServiceImpl implements AuthService {
         }
         entity.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userService.updateById(entity);
+    }
+
+    @Override
+    public UserVO register(UserCreateDTO request) {
+        // 复用已有创建用户逻辑
+        return userService.createUser(request);
     }
 }

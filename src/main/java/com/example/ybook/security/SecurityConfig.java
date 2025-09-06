@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // .securityMatcher("/api/**") // 只对 /api 路径应用安全规则
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/api/auth/login")
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/api/auth/login", "/api/auth/register")
                         .permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex

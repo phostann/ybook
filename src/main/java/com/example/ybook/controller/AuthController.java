@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import com.example.ybook.dto.UserCreateDTO;
+import com.example.ybook.vo.UserVO;
 
 /**
  * <p>
@@ -65,6 +67,38 @@ public class AuthController {
     })
     public com.example.ybook.common.ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequestDTO request) {
         return com.example.ybook.common.ApiResponse.success(authService.login(request));
+    }
+
+    @PostMapping("/register")
+    @Operation(summary = "用户注册", description = "开放注册接口，创建新用户")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "注册成功",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = com.example.ybook.common.ApiResponse.class),
+                            examples = @ExampleObject(
+                                    name = "成功示例",
+                                    description = "返回统一结构，data 为用户信息（不包含密码）",
+                                    value = "{\n  \"code\": 0,\n  \"message\": \"OK\",\n  \"data\": { \n    \"id\": 1,\n    \"username\": \"alice\",\n    \"email\": \"alice@example.com\",\n    \"status\": \"1\"\n  },\n  \"timestamp\": 1712345678901\n}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "参数校验失败",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "错误示例",
+                                    value = "{\n  \"code\": 42200,\n  \"message\": \"Validation error\",\n  \"timestamp\": 1712345678901\n}"
+                            )
+                    )
+            )
+    })
+    public com.example.ybook.common.ApiResponse<UserVO> register(@Valid @RequestBody UserCreateDTO request) {
+        return com.example.ybook.common.ApiResponse.success(authService.register(request));
     }
 
     @PostMapping("/change-password")
