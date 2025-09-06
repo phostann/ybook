@@ -11,6 +11,11 @@ import com.example.ybook.service.AuthService;
 import com.example.ybook.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,8 +57,18 @@ public class AuthServiceImpl implements AuthService {
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
         } catch (AuthenticationException ex) {
-            // 统一返回清晰的业务错误提示，避免 500
-            throw new BizException(ApiCode.BAD_REQUEST, "用户名或密码错误");
+            if (ex instanceof BadCredentialsException) {
+                throw new BizException(ApiCode.BAD_REQUEST, "用户名或密码错误");
+            } else if (ex instanceof DisabledException) {
+                throw new BizException(ApiCode.USER_DISABLED);
+            } else if (ex instanceof LockedException) {
+                throw new BizException(ApiCode.FORBIDDEN, "账户已锁定");
+            } else if (ex instanceof AccountExpiredException) {
+                throw new BizException(ApiCode.FORBIDDEN, "账户已过期");
+            } else if (ex instanceof CredentialsExpiredException) {
+                throw new BizException(ApiCode.UNAUTHORIZED, "凭证已过期");
+            }
+            throw new BizException(ApiCode.UNAUTHORIZED, "认证失败");
         }
         UserDetails principal = (UserDetails) authentication.getPrincipal();
         UserEntity entity = userService.lambdaQuery().eq(UserEntity::getUsername, principal.getUsername()).one();

@@ -1,6 +1,5 @@
 package com.example.ybook.controller;
 
-import com.example.ybook.common.ApiResponse;
 import com.example.ybook.dto.ChangePasswordRequestDTO;
 import com.example.ybook.dto.LoginRequestDTO;
 import com.example.ybook.dto.LoginResponse;
@@ -39,8 +38,8 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "登录成功，返回令牌"),
             @ApiResponse(responseCode = "400", description = "用户名或密码错误")
     })
-    public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequestDTO request) {
-        return ApiResponse.success(authService.login(request));
+    public com.example.ybook.common.ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequestDTO request) {
+        return com.example.ybook.common.ApiResponse.success(authService.login(request));
     }
 
     @PostMapping("/change-password")
@@ -51,8 +50,8 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "未认证或令牌无效"),
             @ApiResponse(responseCode = "400", description = "旧密码不正确")
     })
-    public ApiResponse<Void> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request) {
+    public com.example.ybook.common.ApiResponse<Void> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request) {
         authService.changePassword(request);
-        return ApiResponse.success();
+        return com.example.ybook.common.ApiResponse.success();
     }
 }

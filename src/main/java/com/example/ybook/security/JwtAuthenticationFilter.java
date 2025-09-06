@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.io.IOException;
  * @author 柒
  * @since 2025-09-06
  */
+@Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -57,8 +59,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-        } catch (Exception ignored) {
-            // ignore parse errors; entry point will handle unauthorized when accessing protected resources
+        } catch (Exception e) {
+            // 在开发阶段记录解析失败，避免完全吞没异常
+            log.debug("JWT 解析失败: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);

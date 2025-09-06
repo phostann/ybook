@@ -1,7 +1,6 @@
 package com.example.ybook.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.ybook.common.ApiResponse;
 import com.example.ybook.common.PageResult;
 import com.example.ybook.dto.UserCreateDTO;
 import com.example.ybook.dto.UserUpdateDTO;
@@ -18,6 +17,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 /**
  * <p>
@@ -41,8 +42,12 @@ public class UserController {
      */
     @GetMapping
     @Operation(summary = "获取用户列表", description = "返回所有用户的精简信息列表")
-    public ApiResponse<List<UserVO>> listUsers() {
-        return ApiResponse.success(userService.listAllUsers());
+    @ApiResponses({
+            @ApiResponse(responseCode = "401", description = "未认证或令牌无效"),
+            @ApiResponse(responseCode = "403", description = "无权限")
+    })
+    public com.example.ybook.common.ApiResponse<List<UserVO>> listUsers() {
+        return com.example.ybook.common.ApiResponse.success(userService.listAllUsers());
     }
 
     /**
@@ -50,13 +55,17 @@ public class UserController {
      */
     @GetMapping("/page")
     @Operation(summary = "分页获取用户列表", description = "按页返回用户列表")
-    public ApiResponse<PageResult<UserVO>> pageUsers(
+    @ApiResponses({
+            @ApiResponse(responseCode = "401", description = "未认证或令牌无效"),
+            @ApiResponse(responseCode = "403", description = "无权限")
+    })
+    public com.example.ybook.common.ApiResponse<PageResult<UserVO>> pageUsers(
             @Parameter(description = "当前页码", example = "1")
             @RequestParam(defaultValue = "1") long current,
             @Parameter(description = "每页数量", example = "10")
             @RequestParam(defaultValue = "10") long size) {
         Page<UserEntity> page = new Page<>(current, size);
-        return ApiResponse.success(userService.pageUsers(page));
+        return com.example.ybook.common.ApiResponse.success(userService.pageUsers(page));
     }
 
     /**
@@ -64,8 +73,13 @@ public class UserController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "获取用户详情", description = "根据用户ID获取用户详细信息")
-    public ApiResponse<UserVO> getUserById(@PathVariable Long id) {
-        return ApiResponse.success(userService.getUserById(id));
+    @ApiResponses({
+        @ApiResponse(responseCode = "401", description = "未认证或令牌无效"),
+        @ApiResponse(responseCode = "403", description = "无权限"),
+        @ApiResponse(responseCode = "404", description = "资源不存在")
+    })
+    public com.example.ybook.common.ApiResponse<UserVO> getUserById(@PathVariable Long id) {
+        return com.example.ybook.common.ApiResponse.success(userService.getUserById(id));
     }
 
     /**
@@ -73,8 +87,13 @@ public class UserController {
      */
     @PostMapping
     @Operation(summary = "创建用户", description = "创建新用户并返回其信息")
-    public ApiResponse<UserVO> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
-        return ApiResponse.success(userService.createUser(userCreateDTO));
+    @ApiResponses({
+            @ApiResponse(responseCode = "401", description = "未认证或令牌无效"),
+            @ApiResponse(responseCode = "403", description = "无权限"),
+            @ApiResponse(responseCode = "422", description = "参数校验失败")
+    })
+    public com.example.ybook.common.ApiResponse<UserVO> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
+        return com.example.ybook.common.ApiResponse.success(userService.createUser(userCreateDTO));
     }
 
     /**
@@ -82,8 +101,14 @@ public class UserController {
      */
     @PatchMapping("/{id}")
     @Operation(summary = "更新用户", description = "根据用户ID更新用户的部分信息")
-    public ApiResponse<UserVO> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
-        return ApiResponse.success(userService.updateUser(id, userUpdateDTO));
+    @ApiResponses({
+            @ApiResponse(responseCode = "401", description = "未认证或令牌无效"),
+            @ApiResponse(responseCode = "403", description = "无权限"),
+            @ApiResponse(responseCode = "404", description = "资源不存在"),
+            @ApiResponse(responseCode = "422", description = "参数校验失败")
+    })
+    public com.example.ybook.common.ApiResponse<UserVO> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
+        return com.example.ybook.common.ApiResponse.success(userService.updateUser(id, userUpdateDTO));
     }
 
     /**
@@ -91,7 +116,12 @@ public class UserController {
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "删除用户", description = "根据用户ID删除用户")
-    public ApiResponse<Boolean> deleteUser(@PathVariable Long id) {
-        return ApiResponse.success(userService.deleteUser(id));
+    @ApiResponses({
+            @ApiResponse(responseCode = "401", description = "未认证或令牌无效"),
+            @ApiResponse(responseCode = "403", description = "无权限"),
+            @ApiResponse(responseCode = "404", description = "资源不存在")
+    })
+    public com.example.ybook.common.ApiResponse<Boolean> deleteUser(@PathVariable Long id) {
+        return com.example.ybook.common.ApiResponse.success(userService.deleteUser(id));
     }
 }
