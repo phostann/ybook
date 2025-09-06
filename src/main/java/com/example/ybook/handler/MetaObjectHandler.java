@@ -7,6 +7,14 @@ import org.apache.ibatis.reflection.MetaObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+/**
+ * <p>
+ * MyBatis-Plus 元对象处理器
+ * </p>
+ *
+ * @author 柒
+ * @since 2025-09-06
+ */
 @Slf4j
 @Component
 public class MetaObjectHandler implements com.baomidou.mybatisplus.core.handlers.MetaObjectHandler {

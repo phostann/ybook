@@ -8,6 +8,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * <p>
+ * 通用分页返回结果
+ * </p>
+ *
+ * @author 柒
+ * @since 2025-09-06
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,4 +29,3 @@ public class PageResult<T> {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<T> records;
 }
-

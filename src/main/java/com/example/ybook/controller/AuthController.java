@@ -8,6 +8,14 @@ import com.example.ybook.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * <p>
+ * 认证相关接口
+ * </p>
+ *
+ * @author 柒
+ * @since 2025-09-06
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

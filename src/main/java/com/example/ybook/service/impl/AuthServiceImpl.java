@@ -17,6 +17,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * <p>
+ * 认证服务实现
+ * </p>
+ *
+ * @author 柒
+ * @since 2025-09-06
+ */
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -66,4 +74,3 @@ public class AuthServiceImpl implements AuthService {
         userService.updateById(entity);
     }
 }
-

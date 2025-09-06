@@ -13,6 +13,14 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * <p>
+ * 用户详情服务实现
+ * </p>
+ *
+ * @author 柒
+ * @since 2025-09-06
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserService userService;
@@ -32,4 +40,3 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new User(entity.getUsername(), entity.getPassword(), enabled, true, true, true, authorities);
     }
 }
-

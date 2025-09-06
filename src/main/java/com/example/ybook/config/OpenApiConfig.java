@@ -11,6 +11,14 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * <p>
+ * OpenAPI 文档配置
+ * </p>
+ *
+ * @author 柒
+ * @since 2025-09-06
+ */
 @Configuration
 public class OpenApiConfig {
 
@@ -37,4 +45,3 @@ public class OpenApiConfig {
                                 .bearerFormat("JWT")));
     }
 }
-

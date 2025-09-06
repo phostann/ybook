@@ -11,6 +11,14 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+/**
+ * <p>
+ * JWT 令牌服务
+ * </p>
+ *
+ * @author 柒
+ * @since 2025-09-06
+ */
 @Component
 public class JwtService {
 

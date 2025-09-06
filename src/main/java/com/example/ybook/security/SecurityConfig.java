@@ -16,6 +16,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 
+/**
+ * <p>
+ * Spring Security 配置
+ * </p>
+ *
+ * @author 柒
+ * @since 2025-09-06
+ */
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {

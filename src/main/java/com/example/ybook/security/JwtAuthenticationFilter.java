@@ -15,6 +15,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * <p>
+ * JWT 认证过滤器
+ * </p>
+ *
+ * @author 柒
+ * @since 2025-09-06
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -56,4 +64,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-
