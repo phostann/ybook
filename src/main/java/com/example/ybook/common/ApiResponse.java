@@ -16,7 +16,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "ApiResponse", description = "统一返回体")
+// 注意：不要设置固定的 name，避免泛型不同实例被折叠为同一组件
+@Schema(description = "统一返回体")
 public class ApiResponse<T> {
     @Schema(description = "业务状态码", example = "0")
     private int code;

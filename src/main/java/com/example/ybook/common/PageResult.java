@@ -21,7 +21,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "PageResult", description = "通用分页结果")
+// 注意：不要设置固定的 name，避免不同 T 的分页结果被折叠
+@Schema(description = "通用分页结果")
 public class PageResult<T> {
     @Schema(description = "当前页码", example = "1")
     private long current;
