@@ -31,19 +31,18 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .securityMatcher("/api/**")  // 只对 /api 路径应用安全规则
-                .authorizeHttpRequests(reg -> reg
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .anyRequest().authenticated()
-                )
+                // .securityMatcher("/api/**") // 只对 /api 路径应用安全规则
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/api/auth/login")
+                        .permitAll()
+                        .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             writeJson(response, ApiResponse.error(ApiCode.UNAUTHORIZED));
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             writeJson(response, ApiResponse.error(ApiCode.FORBIDDEN));
-                        })
-                )
+                        }))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

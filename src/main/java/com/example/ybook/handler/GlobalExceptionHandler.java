@@ -6,6 +6,8 @@ import com.example.ybook.exception.BizException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
@@ -23,6 +25,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -31,7 +34,7 @@ public class GlobalExceptionHandler {
         return ApiResponse.error(ex.getCode(), ex.getMessage());
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+    @ExceptionHandler({ MethodArgumentNotValidException.class, BindException.class })
     public ApiResponse<Void> handleValidation(Exception ex) {
         String msg;
         if (ex instanceof MethodArgumentNotValidException manve) {
@@ -59,20 +62,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ApiResponse<Void> handleBadBody(HttpMessageNotReadableException ex) {
         return ApiResponse.error(ApiCode.REQUEST_NOT_READABLE, ApiCode.REQUEST_NOT_READABLE.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public Object handleOther(Exception ex, HttpServletRequest request) {
-        // 排除 Swagger 相关路径，让它们使用默认的异常处理
-        String requestPath = request.getRequestURI();
-        if (requestPath.startsWith("/v3/api-docs") || 
-            requestPath.startsWith("/swagger-ui") || 
-            requestPath.startsWith("/swagger-resources") || 
-            requestPath.startsWith("/webjars")) {
-            // 直接抛出异常，让 Spring 默认处理
-            throw new RuntimeException(ex);
-        }
-        return ApiResponse.error(ApiCode.INTERNAL_ERROR, ApiCode.INTERNAL_ERROR.getMessage());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -113,8 +102,14 @@ public class GlobalExceptionHandler {
         return ApiResponse.error(ApiCode.NOT_FOUND, "资源不存在");
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, DataIntegrityViolationException.class})
+    @ExceptionHandler({ IllegalArgumentException.class, DataIntegrityViolationException.class })
     public ApiResponse<Void> handleBadRequest(RuntimeException ex) {
         return ApiResponse.error(ApiCode.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public Object handleOther(Exception ex, HttpServletRequest request) {
+        log.error("Unhandled exception occurred", ex);
+        return ApiResponse.error(ApiCode.INTERNAL_ERROR, ApiCode.INTERNAL_ERROR.getMessage());
     }
 }

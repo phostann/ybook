@@ -16,7 +16,7 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI ybookOpenAPI() {
-        final String securitySchemeName = "bearerAuth";
+        final String securitySchemeName = "Bearer Authentication";
 
         return new OpenAPI()
                 .info(new Info()
