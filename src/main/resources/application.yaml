@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: ybook
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/ybook?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: ybook_root_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+security:
+  jwt:
+    # 至少 32 字节长度的密钥；生产环境请改为安全随机值
+    secret: ZGVmYXVsdC1zZWNyZXQtZm9yLXlib29rLXNwcmluZy1zZWN1cml0eQ==
+    # 令牌有效期（毫秒），默认 1 天
+    expiration: 86400000
