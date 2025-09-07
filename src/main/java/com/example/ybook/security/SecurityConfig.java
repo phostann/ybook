@@ -1,7 +1,7 @@
 package com.example.ybook.security;
 
 import com.example.ybook.common.ApiCode;
-import com.example.ybook.common.ApiResponse;
+import com.example.ybook.common.ApiResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.config.Customizer;
@@ -53,11 +53,11 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            writeJson(response, ApiResponse.error(ApiCode.UNAUTHORIZED));
+                            writeJson(response, ApiResult.error(ApiCode.UNAUTHORIZED));
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                            writeJson(response, ApiResponse.error(ApiCode.FORBIDDEN));
+                            writeJson(response, ApiResult.error(ApiCode.FORBIDDEN));
                         }))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -68,7 +68,7 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-    private void writeJson(jakarta.servlet.http.HttpServletResponse response, ApiResponse<?> body) throws IOException {
+    private void writeJson(jakarta.servlet.http.HttpServletResponse response, ApiResult<?> body) throws IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
         new ObjectMapper().writeValue(response.getWriter(), body);

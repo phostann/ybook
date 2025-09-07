@@ -1,11 +1,10 @@
-package com.example.ybook.mapper.converter;
+package com.example.ybook.converter;
 
 import com.example.ybook.dto.UserCreateDTO;
 import com.example.ybook.dto.UserUpdateDTO;
 import com.example.ybook.entity.UserEntity;
 import com.example.ybook.vo.UserVO;
 import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
 /**
  * <p>
@@ -15,10 +14,8 @@ import org.mapstruct.factory.Mappers;
  * @author 柒
  * @since 2025-09-05
  */
-@Mapper
+@Mapper(componentModel = "spring")
 public interface UserConverter {
-
-    UserConverter INSTANCE = Mappers.getMapper(UserConverter.class);
 
     /**
      * UserEntity 转换为 UserVO

@@ -1,5 +1,6 @@
 package com.example.ybook.controller;
 
+import com.example.ybook.common.ApiResult;
 import com.example.ybook.dto.ChangePasswordRequestDTO;
 import com.example.ybook.dto.LoginRequestDTO;
 import com.example.ybook.dto.LoginResponse;
@@ -45,7 +46,7 @@ public class AuthController {
                     description = "登录成功，返回令牌",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = com.example.ybook.common.ApiResponse.class),
+                            schema = @Schema(implementation = ApiResult.class),
                             examples = @ExampleObject(
                                     name = "成功示例",
                                     description = "返回统一结构，其中 data 为登录令牌",
@@ -65,8 +66,8 @@ public class AuthController {
                     )
             )
     })
-    public com.example.ybook.common.ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequestDTO request) {
-        return com.example.ybook.common.ApiResponse.success(authService.login(request));
+    public ApiResult<LoginResponse> login(@Valid @RequestBody LoginRequestDTO request) {
+        return ApiResult.success(authService.login(request));
     }
 
     @PostMapping("/register")
@@ -77,7 +78,7 @@ public class AuthController {
                     description = "注册成功",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = com.example.ybook.common.ApiResponse.class),
+                            schema = @Schema(implementation = ApiResult.class),
                             examples = @ExampleObject(
                                     name = "成功示例",
                                     description = "返回统一结构，data 为用户信息（不包含密码）",
@@ -97,8 +98,8 @@ public class AuthController {
                     )
             )
     })
-    public com.example.ybook.common.ApiResponse<UserVO> register(@Valid @RequestBody UserCreateDTO request) {
-        return com.example.ybook.common.ApiResponse.success(authService.register(request));
+    public ApiResult<UserVO> register(@Valid @RequestBody UserCreateDTO request) {
+        return ApiResult.success(authService.register(request));
     }
 
     @PostMapping("/change-password")
@@ -139,8 +140,8 @@ public class AuthController {
                     )
             )
     })
-    public com.example.ybook.common.ApiResponse<Void> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request) {
+    public ApiResult<Void> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request) {
         authService.changePassword(request);
-        return com.example.ybook.common.ApiResponse.success();
+        return ApiResult.success();
     }
 }

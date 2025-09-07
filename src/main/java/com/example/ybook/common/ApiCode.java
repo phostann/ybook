@@ -30,7 +30,16 @@ public enum ApiCode {
     USER_NOT_FOUND(10001, "用户不存在"),
     USERNAME_EXISTS(10002, "用户名已存在"),
     EMAIL_EXISTS(10003, "邮箱已存在"),
-    USER_DISABLED(10004, "用户已禁用");
+    USER_DISABLED(10004, "用户已禁用"),
+
+    // 标签相关 200xx
+    LABEL_NOT_FOUND(20001, "标签不存在"),
+    LABEL_NAME_EXISTS(20002, "标签名称已存在"),
+    
+    // 笔记相关 300xx
+    NOTE_NOT_FOUND(30001, "笔记不存在"),
+    NOTE_ACCESS_DENIED(30002, "无权访问该笔记"),
+    NOTE_STATUS_INVALID(30003, "笔记状态无效");
 
     private final int code;
     private final String message;

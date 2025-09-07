@@ -10,15 +10,14 @@ import java.time.Instant;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * 全局统一返回体
+ * 统一返回体（避免与 Swagger 的 ApiResponse 注解重名）
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-// 注意：不要设置固定的 name，避免泛型不同实例被折叠为同一组件
 @Schema(description = "统一返回体")
-public class ApiResponse<T> {
+public class ApiResult<T> {
     @Schema(description = "业务状态码", example = "0")
     private int code;
     @Schema(description = "消息描述", example = "OK")
@@ -29,8 +28,8 @@ public class ApiResponse<T> {
     @Schema(description = "时间戳（毫秒）", example = "1712345678901")
     private long timestamp;
 
-    public static <T> ApiResponse<T> success(T data) {
-        return ApiResponse.<T>builder()
+    public static <T> ApiResult<T> success(T data) {
+        return ApiResult.<T>builder()
                 .code(ApiCode.SUCCESS.getCode())
                 .message(ApiCode.SUCCESS.getMessage())
                 .data(data)
@@ -38,19 +37,20 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    public static <T> ApiResponse<T> success() {
+    public static <T> ApiResult<T> success() {
         return success(null);
     }
 
-    public static <T> ApiResponse<T> error(ApiCode code, String message) {
-        return ApiResponse.<T>builder()
+    public static <T> ApiResult<T> error(ApiCode code, String message) {
+        return ApiResult.<T>builder()
                 .code(code.getCode())
                 .message(message)
                 .timestamp(Instant.now().toEpochMilli())
                 .build();
     }
 
-    public static <T> ApiResponse<T> error(ApiCode code) {
+    public static <T> ApiResult<T> error(ApiCode code) {
         return error(code, code.getMessage());
     }
 }
+

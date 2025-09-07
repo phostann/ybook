@@ -9,7 +9,7 @@ import com.example.ybook.dto.UserCreateDTO;
 import com.example.ybook.dto.UserUpdateDTO;
 import com.example.ybook.entity.UserEntity;
 import com.example.ybook.mapper.UserMapper;
-import com.example.ybook.mapper.converter.UserConverter;
+import com.example.ybook.converter.UserConverter;
 import com.example.ybook.service.UserService;
 import com.example.ybook.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +33,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private UserConverter userConverter;
 
     @Override
     public UserVO getUserById(Long id) {
@@ -40,14 +43,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         if (entity == null) {
             throw new BizException(ApiCode.USER_NOT_FOUND);
         }
-        return UserConverter.INSTANCE.entityToVO(entity);
+        return userConverter.entityToVO(entity);
     }
 
     @Override
     public List<UserVO> listAllUsers() {
         List<UserEntity> entities = this.list();
         return entities.stream()
-                .map(UserConverter.INSTANCE::entityToVO)
+                .map(userConverter::entityToVO)
                 .collect(Collectors.toList());
     }
 
@@ -55,7 +58,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     public PageResult<UserVO> pageUsers(Page<UserEntity> page) {
         Page<UserEntity> entityPage = this.page(page);
         List<UserVO> voList = entityPage.getRecords().stream()
-                .map(UserConverter.INSTANCE::entityToVO)
+                .map(userConverter::entityToVO)
                 .collect(Collectors.toList());
         return PageResult.<UserVO>builder()
                 .current(entityPage.getCurrent())
@@ -80,14 +83,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
 
         // 转换DTO到实体
-        UserEntity entity = UserConverter.INSTANCE.createDTOToEntity(userCreateDTO);
+        UserEntity entity = userConverter.createDTOToEntity(userCreateDTO);
 
         // 加密密码
         entity.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
 
         // 保存用户
         this.save(entity);
-        return UserConverter.INSTANCE.entityToVO(entity);
+        return userConverter.entityToVO(entity);
     }
 
     @Override
@@ -122,11 +125,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
 
         // 更新实体 (注意：MapStruct 不会更新密码、状态、ID、时间字段)
-        UserEntity entity = UserConverter.INSTANCE.updateDTOToEntity(id, userUpdateDTO);
+        UserEntity entity = userConverter.updateDTOToEntity(id, userUpdateDTO);
 
         // 保存更新
         this.updateById(entity);
-        return UserConverter.INSTANCE.entityToVO(this.getById(id));
+        return userConverter.entityToVO(this.getById(id));
     }
 
     @Override

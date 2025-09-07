@@ -1,7 +1,7 @@
 package com.example.ybook.handler;
 
 import com.example.ybook.common.ApiCode;
-import com.example.ybook.common.ApiResponse;
+import com.example.ybook.common.ApiResult;
 import com.example.ybook.exception.BizException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
@@ -41,13 +41,13 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BizException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBiz(BizException ex) {
+    public ResponseEntity<ApiResult<Void>> handleBiz(BizException ex) {
         return ResponseEntity.status(statusOf(ex.getCode()))
-                .body(ApiResponse.error(ex.getCode(), ex.getMessage()));
+                .body(ApiResult.error(ex.getCode(), ex.getMessage()));
     }
 
     @ExceptionHandler({ MethodArgumentNotValidException.class, BindException.class })
-    public ResponseEntity<ApiResponse<Void>> handleValidation(Exception ex) {
+    public ResponseEntity<ApiResult<Void>> handleValidation(Exception ex) {
         String msg;
         if (ex instanceof MethodArgumentNotValidException manve) {
             msg = manve.getBindingResult().getFieldErrors().stream()
@@ -61,80 +61,80 @@ public class GlobalExceptionHandler {
             msg = ApiCode.VALIDATION_ERROR.getMessage();
         }
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(ApiResponse.error(ApiCode.VALIDATION_ERROR, msg));
+                .body(ApiResult.error(ApiCode.VALIDATION_ERROR, msg));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleConstraint(ConstraintViolationException ex) {
+    public ResponseEntity<ApiResult<Void>> handleConstraint(ConstraintViolationException ex) {
         String msg = ex.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining("; "));
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(ApiResponse.error(ApiCode.VALIDATION_ERROR, msg));
+                .body(ApiResult.error(ApiCode.VALIDATION_ERROR, msg));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBadBody(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ApiResult<Void>> handleBadBody(HttpMessageNotReadableException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(ApiCode.REQUEST_NOT_READABLE, ApiCode.REQUEST_NOT_READABLE.getMessage()));
+                .body(ApiResult.error(ApiCode.REQUEST_NOT_READABLE, ApiCode.REQUEST_NOT_READABLE.getMessage()));
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+    public ResponseEntity<ApiResult<Void>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-                .body(ApiResponse.error(ApiCode.METHOD_NOT_ALLOWED, "请求方法不被支持"));
+                .body(ApiResult.error(ApiCode.METHOD_NOT_ALLOWED, "请求方法不被支持"));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMissingParam(MissingServletRequestParameterException ex) {
+    public ResponseEntity<ApiResult<Void>> handleMissingParam(MissingServletRequestParameterException ex) {
         String msg = String.format("缺少必填参数: %s", ex.getParameterName());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(ApiCode.PARAM_MISSING, msg));
+                .body(ApiResult.error(ApiCode.PARAM_MISSING, msg));
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMissingHeader(MissingRequestHeaderException ex) {
+    public ResponseEntity<ApiResult<Void>> handleMissingHeader(MissingRequestHeaderException ex) {
         String msg = String.format("缺少必填请求头: %s", ex.getHeaderName());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(ApiCode.PARAM_MISSING, msg));
+                .body(ApiResult.error(ApiCode.PARAM_MISSING, msg));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiResponse<Void>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<ApiResult<Void>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         String msg = String.format("参数类型错误: %s", ex.getName());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(ApiCode.PARAM_TYPE_MISMATCH, msg));
+                .body(ApiResult.error(ApiCode.PARAM_TYPE_MISMATCH, msg));
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
+    public ResponseEntity<ApiResult<Void>> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                .body(ApiResponse.error(ApiCode.MEDIA_TYPE_NOT_SUPPORTED, ApiCode.MEDIA_TYPE_NOT_SUPPORTED.getMessage()));
+                .body(ApiResult.error(ApiCode.MEDIA_TYPE_NOT_SUPPORTED, ApiCode.MEDIA_TYPE_NOT_SUPPORTED.getMessage()));
     }
 
     @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex) {
+    public ResponseEntity<ApiResult<Void>> handleMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex) {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-                .body(ApiResponse.error(ApiCode.MEDIA_TYPE_NOT_ACCEPTABLE, ApiCode.MEDIA_TYPE_NOT_ACCEPTABLE.getMessage()));
+                .body(ApiResult.error(ApiCode.MEDIA_TYPE_NOT_ACCEPTABLE, ApiCode.MEDIA_TYPE_NOT_ACCEPTABLE.getMessage()));
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNoHandler(NoHandlerFoundException ex) {
+    public ResponseEntity<ApiResult<Void>> handleNoHandler(NoHandlerFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(ApiCode.NOT_FOUND, "资源不存在"));
+                .body(ApiResult.error(ApiCode.NOT_FOUND, "资源不存在"));
     }
 
     @ExceptionHandler({ IllegalArgumentException.class, DataIntegrityViolationException.class })
-    public ResponseEntity<ApiResponse<Void>> handleBadRequest(RuntimeException ex) {
+    public ResponseEntity<ApiResult<Void>> handleBadRequest(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(ApiCode.BAD_REQUEST, ex.getMessage()));
+                .body(ApiResult.error(ApiCode.BAD_REQUEST, ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleOther(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<Void>> handleOther(Exception ex, HttpServletRequest request) {
         log.error("Unhandled exception occurred", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error(ApiCode.INTERNAL_ERROR, ApiCode.INTERNAL_ERROR.getMessage()));
+                .body(ApiResult.error(ApiCode.INTERNAL_ERROR, ApiCode.INTERNAL_ERROR.getMessage()));
     }
 
     private HttpStatus statusOf(ApiCode code) {

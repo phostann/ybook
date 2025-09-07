@@ -56,13 +56,13 @@ YBook is a Spring Boot 3.x application with Maven build system, implementing a R
   - `mapper/converter/` - MapStruct converters for entity/DTO/VO mapping
   - `config/` - Spring configuration classes (MybatisPlusConfig, SecurityConfig, PasswordConfig)
   - `handler/` - Global exception handler and MyBatis Plus field handlers
-  - `common/` - Shared utilities (ApiResponse, PageResult, ApiCode)
+  - `common/` - Shared utilities (ApiResult, PageResult, ApiCode)
   - `exception/` - Custom exception classes (BizException)
   - `security/` - JWT authentication and Spring Security configuration
 
 ### Key Patterns
 - **Layered Architecture**: Controller → Service → Mapper → Entity
-- **Unified API Response**: All endpoints return `ApiResponse<T>` wrapper
+- **Unified API Response**: All endpoints return `ApiResult<T>` wrapper
 - **Pagination**: Uses MyBatis Plus `Page<T>` for pagination with `PageResult<T>` wrapper
 - **Validation**: Jakarta Bean Validation with `@Valid` on DTOs
 - **Exception Handling**: Global exception handler for consistent error responses
@@ -71,7 +71,7 @@ YBook is a Spring Boot 3.x application with Maven build system, implementing a R
 
 ### Authentication & Security
 - JWT-based authentication with configurable expiration
-- Public endpoints: `/api/auth/login`, Swagger UI documentation
+- Public endpoints: `/api/auth/login`, `/api/auth/register`, Swagger UI documentation
 - All other endpoints require authentication
 - Custom JWT filter processes tokens from Authorization header
 - Password encoding using Spring Security Crypto

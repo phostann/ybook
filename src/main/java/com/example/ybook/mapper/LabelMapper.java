@@ -1,17 +1,14 @@
 package com.example.ybook.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.ybook.entity.UserEntity;
+import com.example.ybook.entity.LabelEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
- *
+ * 标签 Mapper
  * </p>
- *
- * @author 柒
- * @since 2025-09-03 21:54:15
  */
 @Mapper
-public interface UserMapper extends BaseMapper<UserEntity> {
+public interface LabelMapper extends BaseMapper<LabelEntity> {
 }

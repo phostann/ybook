@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 2025-08-20 22:48:38
  */
 @SpringBootApplication
-@MapperScan("com.example.ybook.mapper")
+@MapperScan(basePackages = "com.example.ybook.mapper", annotationClass = org.apache.ibatis.annotations.Mapper.class)
 public class YbookApplication {
 
     public static void main(String[] args) {
