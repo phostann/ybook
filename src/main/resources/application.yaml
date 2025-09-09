@@ -4,6 +4,10 @@ spring:
   web:
     resources:
       add-mappings: false
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 500MB
 
   datasource:
     url: jdbc:mysql://localhost:3306/ybook?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
@@ -21,3 +25,9 @@ security:
     secret: ZGVmYXVsdC1zZWNyZXQtZm9yLXlib29rLXNwcmluZy1zZWN1cml0eQ==
     # 令牌有效期（毫秒），默认 1 天
     expiration: 86400000
+
+minio:
+  endpoint: http://localhost:9000
+  access-key: VpvLTWcT0Ozq0poYDKNg
+  secret-key: bO8K1dM2kJv9D3Ok133ZXLHhvh6KD4oGAlEIWKTV
+  bucket-name: files

@@ -27,9 +27,6 @@ public class NoteUpdateDTO {
     @Size(max = 255, message = "视频长度不能超过255个字符")
     private String video;
     
-    @Schema(description = "是否置顶，0-否，1-是", example = "1")
-    private String isTop;
-    
     @Schema(description = "类型，1-图文，2-视频", example = "1")
     private String type;
 }

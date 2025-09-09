@@ -29,10 +29,7 @@ public class NoteCreateDTO {
     @Schema(description = "视频", example = "video.mp4")
     @Size(max = 255, message = "视频长度不能超过255个字符")
     private String video;
-    
-    @Schema(description = "是否置顶，0-否，1-是", example = "0")
-    private String isTop = "0";
-    
+     
     @Schema(description = "类型，1-图文，2-视频", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "笔记类型不能为空")
     private String type;

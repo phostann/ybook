@@ -7,6 +7,7 @@ import com.example.ybook.dto.LoginResponse;
 import com.example.ybook.dto.UserCreateDTO;
 import com.example.ybook.entity.UserEntity;
 import com.example.ybook.exception.BizException;
+import com.example.ybook.security.CurrentUserContext;
 import com.example.ybook.security.JwtService;
 import com.example.ybook.service.AuthService;
 import com.example.ybook.service.UserService;
@@ -102,5 +103,14 @@ public class AuthServiceImpl implements AuthService {
     public UserVO register(UserCreateDTO request) {
         // 复用已有创建用户逻辑
         return userService.createUser(request);
+    }
+
+    @Override
+    public UserVO getCurrentUserProfile() {
+        Long userId = CurrentUserContext.getUserId();
+        if (userId == null) {
+            throw new BizException(ApiCode.UNAUTHORIZED, "用户未登录");
+        }
+        return userService.getUserById(userId);
     }
 }

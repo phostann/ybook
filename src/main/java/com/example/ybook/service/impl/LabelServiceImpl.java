@@ -50,6 +50,19 @@ public class LabelServiceImpl extends ServiceImpl<LabelMapper, LabelEntity> impl
     }
 
     @Override
+    public List<LabelVO> listAll(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return listAll();
+        }
+        return this.lambdaQuery()
+                .like(LabelEntity::getName, name.trim())
+                .list()
+                .stream()
+                .map(labelConverter::entityToVO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public PageResult<LabelVO> pageLabels(Page<LabelEntity> page) {
         Page<LabelEntity> entityPage = this.page(page);
         List<LabelVO> voList = entityPage.getRecords().stream()

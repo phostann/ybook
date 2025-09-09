@@ -1,5 +1,17 @@
 package com.example.ybook.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.ybook.common.ApiResult;
 import com.example.ybook.common.PageResult;
@@ -8,6 +20,7 @@ import com.example.ybook.dto.NoteUpdateDTO;
 import com.example.ybook.entity.NoteEntity;
 import com.example.ybook.service.NoteService;
 import com.example.ybook.vo.NoteVO;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,9 +30,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 笔记管理接口
@@ -33,21 +43,6 @@ public class NoteController {
     @Resource
     private NoteService noteService;
     
-    /**
-     * 获取当前用户ID（从JWT中解析）
-     * 这里简化处理，实际应该从SecurityContext或JWT中获取
-     */
-    private Long getCurrentUserId(HttpServletRequest request) {
-        // 实际实现应该从JWT token中解析用户ID
-        // 这里返回一个示例用户ID，实际项目中需要根据具体的JWT实现来获取
-        String userIdHeader = request.getHeader("X-User-Id");
-        if (userIdHeader != null) {
-            return Long.valueOf(userIdHeader);
-        }
-        // 或者从SecurityContext中获取
-        return 1L; // 临时返回，实际需要实现
-    }
-    
     @GetMapping
     @Operation(summary = "获取我的笔记列表", description = "获取当前用户的所有笔记")
     @ApiResponses({
@@ -55,8 +50,7 @@ public class NoteController {
             @ApiResponse(responseCode = "403", description = "无权限")
     })
     public ApiResult<List<NoteVO>> listMyNotes(HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
-        return ApiResult.success(noteService.listNotesByUserId(userId));
+        return ApiResult.success(noteService.listNotesByUserId());
     }
     
     @GetMapping("/page")
@@ -69,9 +63,8 @@ public class NoteController {
             @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") long current,
             @Parameter(description = "每页数量", example = "10") @RequestParam(defaultValue = "10") long size,
             HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
         Page<NoteEntity> page = new Page<>(current, size);
-        return ApiResult.success(noteService.pageNotesByUserId(page, userId));
+        return ApiResult.success(noteService.pageNotesByUserId(page));
     }
     
     @GetMapping("/search")
@@ -85,9 +78,8 @@ public class NoteController {
             @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") long current,
             @Parameter(description = "每页数量", example = "10") @RequestParam(defaultValue = "10") long size,
             HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
         Page<NoteEntity> page = new Page<>(current, size);
-        return ApiResult.success(noteService.searchNotes(page, keyword, userId));
+        return ApiResult.success(noteService.searchNotes(page, keyword));
     }
     
     @GetMapping("/by-label/{labelId}")
@@ -100,8 +92,7 @@ public class NoteController {
     public ApiResult<List<NoteVO>> getNotesByLabel(
             @PathVariable Long labelId,
             HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
-        return ApiResult.success(noteService.listNotesByLabelId(labelId, userId));
+        return ApiResult.success(noteService.listNotesByLabelId(labelId));
     }
     
     @GetMapping("/by-label/{labelId}/page")
@@ -116,9 +107,8 @@ public class NoteController {
             @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") long current,
             @Parameter(description = "每页数量", example = "10") @RequestParam(defaultValue = "10") long size,
             HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
         Page<NoteEntity> page = new Page<>(current, size);
-        return ApiResult.success(noteService.pageNotesByLabelId(page, labelId, userId));
+        return ApiResult.success(noteService.pageNotesByLabelId(page, labelId));
     }
     
     @GetMapping("/{id}")
@@ -131,8 +121,7 @@ public class NoteController {
     public ApiResult<NoteVO> getNoteDetail(
             @PathVariable Long id,
             HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
-        return ApiResult.success(noteService.getNoteById(id, userId));
+        return ApiResult.success(noteService.getNoteById(id));
     }
     
     @PostMapping
@@ -145,8 +134,7 @@ public class NoteController {
     public ApiResult<NoteVO> createNote(
             @Valid @RequestBody NoteCreateDTO dto,
             HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
-        return ApiResult.success(noteService.createNote(dto, userId));
+        return ApiResult.success(noteService.createNote(dto));
     }
     
     @PatchMapping("/{id}")
@@ -161,8 +149,7 @@ public class NoteController {
             @PathVariable Long id,
             @Valid @RequestBody NoteUpdateDTO dto,
             HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
-        return ApiResult.success(noteService.updateNote(id, dto, userId));
+        return ApiResult.success(noteService.updateNote(id, dto));
     }
     
     @DeleteMapping("/{id}")
@@ -175,8 +162,7 @@ public class NoteController {
     public ApiResult<Boolean> deleteNote(
             @PathVariable Long id,
             HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
-        return ApiResult.success(noteService.deleteNote(id, userId));
+        return ApiResult.success(noteService.deleteNote(id));
     }
     
     @PostMapping("/{id}/toggle-pin")
@@ -189,7 +175,6 @@ public class NoteController {
     public ApiResult<NoteVO> togglePin(
             @PathVariable Long id,
             HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
-        return ApiResult.success(noteService.togglePin(id, userId));
+        return ApiResult.success(noteService.togglePin(id));
     }
 }

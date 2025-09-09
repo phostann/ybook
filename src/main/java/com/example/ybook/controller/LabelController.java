@@ -33,13 +33,14 @@ public class LabelController {
     private LabelService labelService;
 
     @GetMapping
-    @Operation(summary = "获取标签列表", description = "返回所有标签")
+    @Operation(summary = "获取标签列表", description = "返回所有标签，支持按名称模糊匹配")
     @ApiResponses({
             @ApiResponse(responseCode = "401", description = "未认证或令牌无效"),
             @ApiResponse(responseCode = "403", description = "无权限")
     })
-    public ApiResult<List<LabelVO>> listLabels() {
-        return ApiResult.success(labelService.listAll());
+    public ApiResult<List<LabelVO>> listLabels(
+            @Parameter(description = "标签名称（模糊匹配）", example = "技术") @RequestParam(required = false) String name) {
+        return ApiResult.success(labelService.listAll(name));
     }
 
     @GetMapping("/page")

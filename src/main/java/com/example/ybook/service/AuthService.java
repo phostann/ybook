@@ -18,4 +18,5 @@ public interface AuthService {
     LoginResponse login(LoginRequestDTO request);
     void changePassword(ChangePasswordRequestDTO request);
     UserVO register(UserCreateDTO request);
+    UserVO getCurrentUserProfile();
 }

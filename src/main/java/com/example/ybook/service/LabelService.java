@@ -16,6 +16,7 @@ import java.util.List;
 public interface LabelService extends IService<LabelEntity> {
     LabelVO getByLabelId(Long id);
     List<LabelVO> listAll();
+    List<LabelVO> listAll(String name);
     PageResult<LabelVO> pageLabels(Page<LabelEntity> page);
     LabelVO createLabel(LabelCreateDTO dto);
     LabelVO updateLabel(Long id, LabelUpdateDTO dto);

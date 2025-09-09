@@ -144,4 +144,37 @@ public class AuthController {
         authService.changePassword(request);
         return ApiResult.success();
     }
+
+    @GetMapping("/profile")
+    @Operation(summary = "获取当前用户信息", description = "获取当前登录用户的个人资料")
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "获取成功",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResult.class),
+                            examples = @ExampleObject(
+                                    name = "成功示例",
+                                    description = "返回统一结构，data 为当前用户信息（不包含密码）",
+                                    value = "{\n  \"code\": 0,\n  \"message\": \"OK\",\n  \"data\": {\n    \"id\": 1,\n    \"username\": \"alice\",\n    \"email\": \"alice@example.com\",\n    \"status\": \"1\",\n    \"createTime\": \"2025-01-01T10:00:00\",\n    \"updateTime\": \"2025-01-01T10:00:00\"\n  },\n  \"timestamp\": 1712345678901\n}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "未认证或令牌无效",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "未认证示例",
+                                    value = "{\n  \"code\": 40100,\n  \"message\": \"未认证\",\n  \"timestamp\": 1712345678901\n}"
+                            )
+                    )
+            )
+    })
+    public ApiResult<UserVO> profile() {
+        return ApiResult.success(authService.getCurrentUserProfile());
+    }
 }
