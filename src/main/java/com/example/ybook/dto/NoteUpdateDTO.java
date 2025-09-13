@@ -1,8 +1,11 @@
 package com.example.ybook.dto;
 
+import com.example.ybook.common.ImageInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * 笔记更新 DTO
@@ -19,9 +22,8 @@ public class NoteUpdateDTO {
     @Size(max = 50000, message = "内容长度不能超过50000个字符")
     private String content;
     
-    @Schema(description = "图片，多个图片逗号分隔", example = "image1.jpg,image2.jpg")
-    @Size(max = 1000, message = "图片长度不能超过1000个字符")
-    private String images;
+    @Schema(description = "图片信息列表，包含URL和尺寸")
+    private List<ImageInfo> images;
     
     @Schema(description = "视频", example = "video.mp4")
     @Size(max = 255, message = "视频长度不能超过255个字符")
@@ -29,4 +31,8 @@ public class NoteUpdateDTO {
     
     @Schema(description = "类型，1-图文，2-视频", example = "1")
     private String type;
+    
+    @Schema(description = "IP归属地", example = "北京市")
+    @Size(max = 100, message = "IP归属地长度不能超过100个字符")
+    private String ipLocation;
 }

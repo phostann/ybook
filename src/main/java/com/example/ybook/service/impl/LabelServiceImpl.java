@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.ybook.common.ApiCode;
 import com.example.ybook.common.PageResult;
+import com.example.ybook.dto.BatchCreateLabelsDTO;
 import com.example.ybook.dto.LabelCreateDTO;
 import com.example.ybook.dto.LabelUpdateDTO;
 import com.example.ybook.entity.LabelEntity;
@@ -16,7 +17,9 @@ import com.example.ybook.vo.LabelVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -147,5 +150,53 @@ public class LabelServiceImpl extends ServiceImpl<LabelMapper, LabelEntity> impl
         for (Long labelId : labelIds) {
             updateUseCount(labelId, delta);
         }
+    }
+    
+    @Override
+    @Transactional
+    public List<LabelVO> batchCreateOrGetLabels(BatchCreateLabelsDTO dto) {
+        List<String> names = dto.getNames().stream()
+                .map(String::trim)
+                .filter(name -> !name.isEmpty())
+                .distinct() // 去重
+                .collect(Collectors.toList());
+        
+        if (names.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        // 1. 查询已存在的标签
+        List<LabelEntity> existingLabels = this.baseMapper.selectByNames(names);
+        Map<String, LabelEntity> existingMap = existingLabels.stream()
+                .collect(Collectors.toMap(LabelEntity::getName, entity -> entity));
+        
+        // 2. 找出需要创建的标签名
+        List<String> toCreateNames = names.stream()
+                .filter(name -> !existingMap.containsKey(name))
+                .collect(Collectors.toList());
+        
+        // 3. 批量创建不存在的标签
+        List<LabelEntity> newLabels = new ArrayList<>();
+        for (String name : toCreateNames) {
+            LabelEntity entity = new LabelEntity();
+            entity.setName(name);
+            entity.setUseCount(0);
+            newLabels.add(entity);
+        }
+        
+        if (!newLabels.isEmpty()) {
+            this.saveBatch(newLabels);
+        }
+        
+        // 4. 收集所有标签并按原始顺序返回
+        Map<String, LabelEntity> allLabelsMap = existingMap;
+        for (LabelEntity newLabel : newLabels) {
+            allLabelsMap.put(newLabel.getName(), newLabel);
+        }
+        
+        return names.stream()
+                .map(allLabelsMap::get)
+                .map(labelConverter::entityToVO)
+                .collect(Collectors.toList());
     }
 }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.ybook.mapper.NoteLabelMapper">
+
+    <!-- 笔记标签关联实体结果映射 -->
+    <resultMap id="noteLabelResultMap" type="com.example.ybook.entity.NoteLabelEntity">
+        <id column="id" property="id"/>
+        <result column="note_id" property="noteId"/>
+        <result column="label_id" property="labelId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 标签实体结果映射 -->
+    <resultMap id="labelResultMap" type="com.example.ybook.entity.LabelEntity">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="use_count" property="useCount"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 根据笔记ID查询关联的标签列表 -->
+    <select id="selectLabelsByNoteId" resultMap="labelResultMap">
+        SELECT l.* FROM y_label l
+        INNER JOIN y_note_label nl ON l.id = nl.label_id
+        WHERE nl.note_id = #{noteId}
+        ORDER BY l.name
+    </select>
+
+    <!-- 根据笔记ID删除所有标签关联 -->
+    <delete id="deleteByNoteId">
+        DELETE FROM y_note_label WHERE note_id = #{noteId}
+    </delete>
+
+    <!-- 根据标签ID删除所有笔记关联 -->
+    <delete id="deleteByLabelId">
+        DELETE FROM y_note_label WHERE label_id = #{labelId}
+    </delete>
+
+    <!-- 查询标签被使用的次数 -->
+    <select id="countUsageByLabelId" resultType="int">
+        SELECT COUNT(*) FROM y_note_label WHERE label_id = #{labelId}
+    </select>
+
+    <!-- 批量插入笔记标签关联 -->
+    <insert id="batchInsert">
+        INSERT INTO y_note_label (note_id, label_id) VALUES
+        <foreach collection="labelIds" item="labelId" separator=",">
+            (#{noteId}, #{labelId})
+        </foreach>
+    </insert>
+
+</mapper>

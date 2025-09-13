@@ -25,6 +25,9 @@ public class UserVO {
     @Schema(description = "头像URL", example = "https://example.com/avatar.png")
     private String avatar;
     
+    @Schema(description = "昵称", example = "小爱同学")
+    private String nickname;
+    
     @Schema(description = "性别：0 未知；1 男；2 女", example = "1")
     private String gender; // 0: unknown; 1: 男; 2: 女
     

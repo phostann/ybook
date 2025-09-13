@@ -1,15 +1,20 @@
 package com.example.ybook.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.example.ybook.common.ImageInfo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 /**
  * 笔记实体
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@TableName("y_note")
+@TableName(value = "y_note", autoResultMap = true)
 public class NoteEntity extends BaseEntity {
     
     /**
@@ -23,9 +28,10 @@ public class NoteEntity extends BaseEntity {
     private String title;
     
     /**
-     * 图片，多个图片逗号分隔
+     * 图片信息列表，JSON格式存储
      */
-    private String images;
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private List<ImageInfo> images;
     
     /**
      * 视频
@@ -66,4 +72,9 @@ public class NoteEntity extends BaseEntity {
      * 类型，1-图文，2-视频
      */
     private String type;
+    
+    /**
+     * IP归属地
+     */
+    private String ipLocation;
 }

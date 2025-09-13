@@ -125,15 +125,14 @@ public class NoteController {
     }
     
     @PostMapping
-    @Operation(summary = "创建笔记", description = "创建新的笔记")
+    @Operation(summary = "创建笔记", description = "创建新的笔记，可以同时关联标签")
     @ApiResponses({
             @ApiResponse(responseCode = "401", description = "未认证或令牌无效"),
             @ApiResponse(responseCode = "403", description = "无权限"),
             @ApiResponse(responseCode = "422", description = "参数校验失败")
     })
     public ApiResult<NoteVO> createNote(
-            @Valid @RequestBody NoteCreateDTO dto,
-            HttpServletRequest request) {
+            @Valid @RequestBody NoteCreateDTO dto) {
         return ApiResult.success(noteService.createNote(dto));
     }
     

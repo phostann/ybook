@@ -3,6 +3,7 @@ package com.example.ybook.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.ybook.common.PageResult;
+import com.example.ybook.dto.BatchCreateLabelsDTO;
 import com.example.ybook.dto.LabelCreateDTO;
 import com.example.ybook.dto.LabelUpdateDTO;
 import com.example.ybook.entity.LabelEntity;
@@ -36,5 +37,11 @@ public interface LabelService extends IService<LabelEntity> {
      * 批量更新标签使用次数
      */
     void batchUpdateUseCount(List<Long> labelIds, int delta);
+    
+    /**
+     * 批量创建或获取标签，返回标签列表
+     * 如果标签已存在则跳过，如果不存在则创建
+     */
+    List<LabelVO> batchCreateOrGetLabels(BatchCreateLabelsDTO dto);
 }
 

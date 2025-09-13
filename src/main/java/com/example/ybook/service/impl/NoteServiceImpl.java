@@ -134,6 +134,19 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, NoteEntity> impleme
 
         this.save(entity);
 
+        // 处理标签关联
+        if (dto.getLabelIds() != null && !dto.getLabelIds().isEmpty()) {
+            // 验证标签是否存在
+            List<LabelEntity> existingLabels = labelMapper.selectByIds(dto.getLabelIds());
+            List<Long> validLabelIds = existingLabels.stream()
+                    .map(LabelEntity::getId)
+                    .collect(Collectors.toList());
+            
+            if (!validLabelIds.isEmpty()) {
+                noteLabelMapper.batchInsert(entity.getId(), validLabelIds);
+            }
+        }
+
         return getNoteById(entity.getId());
     }
 

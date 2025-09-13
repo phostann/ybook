@@ -3,6 +3,7 @@ package com.example.ybook.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.ybook.common.ApiResult;
 import com.example.ybook.common.PageResult;
+import com.example.ybook.dto.BatchCreateLabelsDTO;
 import com.example.ybook.dto.LabelCreateDTO;
 import com.example.ybook.dto.LabelUpdateDTO;
 import com.example.ybook.entity.LabelEntity;
@@ -76,6 +77,18 @@ public class LabelController {
     })
     public ApiResult<LabelVO> createLabel(@Valid @RequestBody LabelCreateDTO dto) {
         return ApiResult.success(labelService.createLabel(dto));
+    }
+
+    @PostMapping("/batch-create-or-get")
+    @Operation(summary = "批量创建或获取标签", description = "根据标签名称数组，如果标签不存在则创建，存在则跳过，最终返回所有标签列表")
+    @ApiResponses({
+            @ApiResponse(responseCode = "401", description = "未认证或令牌无效"),
+            @ApiResponse(responseCode = "403", description = "无权限"),
+            @ApiResponse(responseCode = "422", description = "参数校验失败")
+    })
+    public ApiResult<List<LabelVO>> batchCreateOrGetLabels(@Valid @RequestBody BatchCreateLabelsDTO dto) {
+        List<LabelVO> labels = labelService.batchCreateOrGetLabels(dto);
+        return ApiResult.success(labels);
     }
 
     @PatchMapping("/{id}")

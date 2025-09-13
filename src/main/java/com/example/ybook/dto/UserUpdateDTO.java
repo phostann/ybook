@@ -1,6 +1,7 @@
 package com.example.ybook.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,10 +26,19 @@ public class UserUpdateDTO {
     @Size(max = 100, message = "邮箱长度不能超过100个字符")
     private String email;
     
-    @Schema(description = "头像URL", example = "https://example.com/avatar.png")
+    @Schema(description = "头像URL（必填）", example = "https://example.com/avatar.png")
+    @NotBlank(message = "头像不能为空")
     @Size(max = 255, message = "头像URL长度不能超过255个字符")
     private String avatar;
     
+    @Schema(description = "昵称", example = "小爱同学")
+    @Size(max = 20, message = "昵称长度不能超过20个字符")
+    private String nickname;
+    
     @Schema(description = "性别：0 未知；1 男；2 女", example = "2")
     private String gender; // 0: unknown; 1: 男; 2: 女
+
+    @Schema(description = "手机号", example = "13800000000")
+    @Size(max = 20, message = "手机号码长度不能超过20个字符")
+    private String phone;
 }

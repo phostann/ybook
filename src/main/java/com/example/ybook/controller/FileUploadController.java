@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RestController
 @RequestMapping("/api/files")
-@Tag(name = "文件上传", description = "文件上传相关接口")
+@Tag(name = "文件上传", description = "文件上传相关接口（无需认证）")
 public class FileUploadController {
 
     private final FileUploadService fileUploadService;
@@ -34,7 +34,7 @@ public class FileUploadController {
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "上传文件", description = "上传文件到MinIO存储")
+    @Operation(summary = "上传文件", description = "上传文件到MinIO存储（无需认证）")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "上传成功",
                     content = @Content(schema = @Schema(implementation = FileUploadVO.class))),

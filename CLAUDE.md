@@ -7,8 +7,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 YBook is a Spring Boot 3.x application with Maven build system, implementing a REST API for note-taking and user management with JWT authentication. The project uses:
 - Java 21 with Maven wrapper
 - Spring Boot 3.5.4 with Spring Web and Spring Security
+- Spring Boot Actuator for monitoring and health checks
 - MyBatis Plus 3.5.13 for ORM with MySQL database
-- Lombok for reducing boilerplate code
+- Lombok 1.18.36 for reducing boilerplate code
 - MapStruct 1.6.3 for object mapping
 - JWT (jjwt 0.12.6) for authentication
 - MinIO 8.5.14 for file storage
@@ -49,8 +50,8 @@ YBook is a Spring Boot 3.x application with Maven build system, implementing a R
 ### Package Structure
 - `com.example.ybook`
   - `entity/` - JPA entities extending BaseEntity (auto-generated timestamps): UserEntity, NoteEntity, LabelEntity, NoteLabelEntity
-  - `dto/` - Data Transfer Objects for API requests (UserCreateDTO, UserUpdateDTO, NoteCreateDTO, NoteUpdateDTO, LabelCreateDTO, LabelUpdateDTO, LoginRequestDTO)  
-  - `vo/` - Value Objects for API responses (UserVO, NoteVO, LabelVO, FileUploadVO)
+  - `dto/` - Data Transfer Objects for API requests (UserCreateDTO, UserUpdateDTO, NoteCreateDTO, NoteUpdateDTO, LabelCreateDTO, LabelUpdateDTO, LoginRequestDTO, ChangePasswordRequestDTO)  
+  - `vo/` - Value Objects for API responses (UserVO, NoteVO, LabelVO, FileUploadVO, LoginResponse)
   - `controller/` - REST controllers with `/api` prefix (UserController, NoteController, LabelController, AuthController, FileUploadController)
   - `service/` and `service/impl/` - Business logic layer
   - `mapper/` - MyBatis Plus mappers with `@MapperScan` configuration
@@ -71,16 +72,21 @@ YBook is a Spring Boot 3.x application with Maven build system, implementing a R
 - **JWT Authentication**: Stateless JWT-based authentication with custom filters
 
 ### Authentication & Security
-- JWT-based authentication with configurable expiration
-- Public endpoints: `/api/auth/login`, `/api/auth/register`, Swagger UI documentation
+- JWT-based authentication with configurable expiration (default: 1 day)
+- JWT secret is Base64-encoded and configured in application.yaml
+- Public endpoints: `/api/auth/login`, `/api/auth/register`, `/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`
 - All other endpoints require authentication
 - Custom JWT filter processes tokens from Authorization header
 - Password encoding using Spring Security Crypto
+- CORS enabled with default configuration
+- CSRF disabled for stateless API
+- Method-level security enabled with `@EnableMethodSecurity`
 
 ### Database Configuration
-- MySQL database connection configured in `application.yaml`
+- MySQL database connection configured in `application.yaml` with timezone set to `Asia/Shanghai`
 - MyBatis Plus with SQL logging enabled for development
 - Auto-generated timestamps via BaseEntity and MetaObjectHandler
+- Table naming convention: entities use `y_` prefix (e.g., `y_user`, `y_note`, `y_label`)
 
 ### File Storage
 - MinIO object storage server for file uploads
@@ -94,11 +100,21 @@ YBook is a Spring Boot 3.x application with Maven build system, implementing a R
 - All entities should extend `BaseEntity` for automatic ID generation and timestamps
 - Use DTOs for input validation and VOs for response data shaping  
 - MapStruct converters handle object transformations between entities, DTOs, and VOs
-- Password handling via Spring Security Crypto (PasswordConfig)
+- Password handling via Spring Security Crypto (PasswordConfig) with `@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)` for password fields
 - RESTful API design with standard HTTP methods and `/api` prefix
 - Swagger UI available at `/swagger-ui.html` for API documentation
+- Spring Boot Actuator endpoints available at `/actuator/*` for monitoring
 - Authentication context available via `CurrentUser` and `CurrentUserContext` for accessing current user info
 - Core domain includes Users, Notes, and Labels with many-to-many relationship between Notes and Labels
+- Static resources are disabled (`add-mappings: false`)
+- Notes support multiple images stored as comma-separated values in the `images` field
+
+## Testing Notes
+
+- Current test coverage is minimal (only context loading test exists)
+- Run tests with `./mvnw test`
+- Consider adding unit tests for services and integration tests for controllers
+- No specific testing patterns established yet
 
 ## Database Setup
 Ensure MySQL is running with database `ybook` and credentials as configured in `application.yaml`:
@@ -113,3 +129,9 @@ Ensure MinIO server is running for file storage operations:
 - Access Key: `VpvLTWcT0Ozq0poYDKNg`
 - Secret Key: `bO8K1dM2kJv9D3Ok133ZXLHhvh6KD4oGAlEIWKTV`
 - Bucket: `files`
+
+## Security Considerations
+
+- **Production Setup**: Change JWT secret from the default Base64-encoded value in `application.yaml`
+- **MinIO Credentials**: The current MinIO access keys are hardcoded for development - use environment variables in production
+- **MySQL Timezone**: Database is configured for `Asia/Shanghai` timezone
