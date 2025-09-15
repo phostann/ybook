@@ -35,4 +35,7 @@ public class NoteUpdateDTO {
     @Schema(description = "IP归属地", example = "北京市")
     @Size(max = 100, message = "IP归属地长度不能超过100个字符")
     private String ipLocation;
+    
+    @Schema(description = "标签ID列表", example = "[1, 2, 3]")
+    private List<Long> labelIds;
 }

@@ -162,8 +162,26 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, NoteEntity> impleme
 
         // 更新笔记基本信息
         NoteEntity toUpdate = noteConverter.updateDTOToEntity(id, dto);
-
         this.updateById(toUpdate);
+
+        // 处理标签关联的更新
+        if (dto.getLabelIds() != null) {
+            // 删除原有的标签关联
+            noteLabelMapper.deleteByNoteId(id);
+            
+            // 添加新的标签关联
+            if (!dto.getLabelIds().isEmpty()) {
+                // 验证标签是否存在
+                List<LabelEntity> existingLabels = labelMapper.selectByIds(dto.getLabelIds());
+                List<Long> validLabelIds = existingLabels.stream()
+                        .map(LabelEntity::getId)
+                        .collect(Collectors.toList());
+                
+                if (!validLabelIds.isEmpty()) {
+                    noteLabelMapper.batchInsert(id, validLabelIds);
+                }
+            }
+        }
 
         return getNoteById(id);
     }
