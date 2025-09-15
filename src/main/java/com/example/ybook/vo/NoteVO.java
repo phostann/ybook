@@ -56,6 +56,12 @@ public class NoteVO {
     @Schema(description = "关联的标签列表")
     private List<LabelVO> labels;
     
+    @Schema(description = "当前用户是否已点赞")
+    private Boolean isLiked;
+    
+    @Schema(description = "当前用户是否已收藏")
+    private Boolean isFavorited;
+    
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
     

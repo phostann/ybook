@@ -20,12 +20,16 @@ public interface NoteConverter {
      * 实体转换为VO
      */
     @Mapping(target = "labels", source = "labels")
+    @Mapping(target = "isLiked", ignore = true)
+    @Mapping(target = "isFavorited", ignore = true)
     NoteVO entityToVO(NoteEntity entity, List<LabelEntity> labels);
 
     /**
      * 实体转换为VO（不包含标签）
      */
     @Mapping(target = "labels", ignore = true)
+    @Mapping(target = "isLiked", ignore = true)
+    @Mapping(target = "isFavorited", ignore = true)
     NoteVO entityToVO(NoteEntity entity);
 
     /**

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.ybook.mapper.CommentMapper">
+
+    <!-- 评论实体结果映射 -->
+    <resultMap id="commentResultMap" type="com.example.ybook.entity.CommentEntity">
+        <id column="id" property="id"/>
+        <result column="note_id" property="noteId"/>
+        <result column="user_id" property="userId"/>
+        <result column="root_comment_id" property="rootCommentId"/>
+        <result column="reply_to_comment_id" property="replyToCommentId"/>
+        <result column="content" property="content"/>
+        <result column="comment_level" property="commentLevel"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="reply_count" property="replyCount"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="ip_location" property="ipLocation"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 根据笔记ID分页查询顶级评论（根评论） -->
+    <select id="selectRootCommentsByNoteId" resultMap="commentResultMap">
+        SELECT * FROM y_comment 
+        WHERE note_id = #{noteId} 
+        AND root_comment_id IS NULL 
+        AND is_deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据根评论ID分页查询所有回复（扁平化，按时间排序） -->
+    <select id="selectRepliesByRootCommentId" resultMap="commentResultMap">
+        SELECT * FROM y_comment 
+        WHERE root_comment_id = #{rootCommentId} 
+        AND is_deleted = 0
+        ORDER BY create_time ASC
+    </select>
+
+    <!-- 根据用户ID分页查询评论 -->
+    <select id="selectCommentsByUserId" resultMap="commentResultMap">
+        SELECT * FROM y_comment 
+        WHERE user_id = #{userId} 
+        AND is_deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据笔记ID统计根评论数量 -->
+    <select id="countRootCommentsByNoteId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM y_comment 
+        WHERE note_id = #{noteId} 
+        AND root_comment_id IS NULL
+        AND is_deleted = 0
+    </select>
+
+    <!-- 根据根评论ID统计回复数量 -->
+    <select id="countRepliesByRootCommentId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM y_comment 
+        WHERE root_comment_id = #{rootCommentId} 
+        AND is_deleted = 0
+    </select>
+
+    <!-- 根据笔记ID统计所有评论数量（包括回复） -->
+    <select id="countAllCommentsByNoteId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM y_comment 
+        WHERE note_id = #{noteId} 
+        AND is_deleted = 0
+    </select>
+
+    <!-- 根据笔记ID软删除所有评论 -->
+    <update id="softDeleteByNoteId">
+        UPDATE y_comment 
+        SET is_deleted = 1, update_time = NOW()
+        WHERE note_id = #{noteId}
+    </update>
+
+    <!-- 更新根评论的回复数量 -->
+    <update id="updateRootCommentReplyCount">
+        UPDATE y_comment 
+        SET reply_count = #{replyCount}, update_time = NOW()
+        WHERE id = #{rootCommentId}
+    </update>
+
+    <!-- 根据评论ID获取被回复的评论信息 -->
+    <select id="selectReplyToComment" resultMap="commentResultMap">
+        SELECT * FROM y_comment 
+        WHERE id = #{replyToCommentId} 
+        AND is_deleted = 0
+    </select>
+
+</mapper>

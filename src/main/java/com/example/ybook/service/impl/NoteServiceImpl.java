@@ -14,8 +14,12 @@ import com.example.ybook.mapper.LabelMapper;
 import com.example.ybook.mapper.NoteMapper;
 import com.example.ybook.security.CurrentUserContext;
 import com.example.ybook.mapper.NoteLabelMapper;
+import com.example.ybook.mapper.UserNoteInteractionMapper;
 import com.example.ybook.service.NoteService;
+import com.example.ybook.service.UserNoteInteractionService;
+import com.example.ybook.vo.InteractionStatusVO;
 import com.example.ybook.vo.NoteVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,19 +30,29 @@ import java.util.stream.Collectors;
 /**
  * 笔记服务实现
  */
+@Slf4j
 @Service
 public class NoteServiceImpl extends ServiceImpl<NoteMapper, NoteEntity> implements NoteService {
 
     private final NoteConverter noteConverter;
     private final NoteLabelMapper noteLabelMapper;
     private final LabelMapper labelMapper;
+    private final UserNoteInteractionService userNoteInteractionService;
+    private final UserNoteInteractionMapper userNoteInteractionMapper;
+    private final com.example.ybook.service.CommentService commentService;
 
     public NoteServiceImpl(NoteConverter noteConverter,
             NoteLabelMapper noteLabelMapper,
-            LabelMapper labelMapper) {
+            LabelMapper labelMapper,
+            UserNoteInteractionService userNoteInteractionService,
+            UserNoteInteractionMapper userNoteInteractionMapper,
+            com.example.ybook.service.CommentService commentService) {
         this.noteConverter = noteConverter;
         this.noteLabelMapper = noteLabelMapper;
         this.labelMapper = labelMapper;
+        this.userNoteInteractionService = userNoteInteractionService;
+        this.userNoteInteractionMapper = userNoteInteractionMapper;
+        this.commentService = commentService;
     }
 
     @Override
@@ -51,7 +65,12 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, NoteEntity> impleme
 
         // 查询关联的标签
         List<LabelEntity> labels = noteLabelMapper.selectLabelsByNoteId(id);
-        return noteConverter.entityToVO(entity, labels);
+        NoteVO noteVO = noteConverter.entityToVO(entity, labels);
+        
+        // 设置交互状态
+        setInteractionStatus(noteVO, userId);
+        
+        return noteVO;
     }
 
     @Override
@@ -196,8 +215,18 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, NoteEntity> impleme
             throw new BizException(ApiCode.NOTE_NOT_FOUND);
         }
 
+        // 删除笔记相关的评论（软删除）
+        commentService.deleteCommentsByNoteId(id);
+        log.info("Deleted comments for noteId: {}", id);
+
         // 删除标签关联
         noteLabelMapper.deleteByNoteId(id);
+
+        // 删除用户交互记录
+        int deletedInteractions = userNoteInteractionMapper.deleteByNoteId(id);
+        if (deletedInteractions > 0) {
+            log.info("Deleted {} user interactions for noteId: {}", deletedInteractions, id);
+        }
 
         // 删除笔记
         return this.removeById(id);
@@ -224,10 +253,56 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, NoteEntity> impleme
      * 将笔记实体列表转换为VO列表，并加载标签信息
      */
     private List<NoteVO> convertNotesToVOsWithLabels(List<NoteEntity> notes) {
-        return notes.stream().map(note -> {
+        Long userId = CurrentUserContext.getUserId();
+        List<NoteVO> noteVOs = notes.stream().map(note -> {
             List<LabelEntity> labels = noteLabelMapper.selectLabelsByNoteId(note.getId());
             return noteConverter.entityToVO(note, labels);
         }).collect(Collectors.toList());
+        
+        // 批量设置交互状态
+        if (userId != null && !noteVOs.isEmpty()) {
+            batchSetInteractionStatus(noteVOs, userId);
+        }
+        
+        return noteVOs;
+    }
+    
+    /**
+     * 设置单个笔记的交互状态
+     */
+    private void setInteractionStatus(NoteVO noteVO, Long userId) {
+        if (userId != null) {
+            InteractionStatusVO.InteractionDetailVO status = 
+                userNoteInteractionService.getInteractionStatus(noteVO.getId(), userId);
+            noteVO.setIsLiked(status.getIsLiked());
+            noteVO.setIsFavorited(status.getIsFavorited());
+        } else {
+            noteVO.setIsLiked(false);
+            noteVO.setIsFavorited(false);
+        }
+    }
+    
+    /**
+     * 批量设置笔记的交互状态
+     */
+    private void batchSetInteractionStatus(List<NoteVO> noteVOs, Long userId) {
+        List<Long> noteIds = noteVOs.stream()
+                .map(NoteVO::getId)
+                .collect(Collectors.toList());
+                
+        InteractionStatusVO statusMap = userNoteInteractionService.batchGetInteractionStatus(noteIds, userId);
+        
+        for (NoteVO noteVO : noteVOs) {
+            InteractionStatusVO.InteractionDetailVO status = 
+                statusMap.getInteractions().get(noteVO.getId());
+            if (status != null) {
+                noteVO.setIsLiked(status.getIsLiked());
+                noteVO.setIsFavorited(status.getIsFavorited());
+            } else {
+                noteVO.setIsLiked(false);
+                noteVO.setIsFavorited(false);
+            }
+        }
     }
 
 }

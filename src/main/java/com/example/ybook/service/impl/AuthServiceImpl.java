@@ -61,15 +61,15 @@ public class AuthServiceImpl implements AuthService {
             );
         } catch (AuthenticationException ex) {
             if (ex instanceof BadCredentialsException) {
-                throw new BizException(ApiCode.BAD_REQUEST, "用户名或密码错误");
+                throw new BizException(ApiCode.LOGIN_FAILED);
             } else if (ex instanceof DisabledException) {
                 throw new BizException(ApiCode.USER_DISABLED);
             } else if (ex instanceof LockedException) {
-                throw new BizException(ApiCode.FORBIDDEN, "账户已锁定");
+                throw new BizException(ApiCode.USER_LOCKED);
             } else if (ex instanceof AccountExpiredException) {
-                throw new BizException(ApiCode.FORBIDDEN, "账户已过期");
+                throw new BizException(ApiCode.USER_EXPIRED);
             } else if (ex instanceof CredentialsExpiredException) {
-                throw new BizException(ApiCode.UNAUTHORIZED, "凭证已过期");
+                throw new BizException(ApiCode.USER_CREDENTIALS_EXPIRED);
             }
             throw new BizException(ApiCode.UNAUTHORIZED, "认证失败");
         }
@@ -93,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
             throw new BizException(ApiCode.USER_NOT_FOUND);
         }
         if (!passwordEncoder.matches(request.getOldPassword(), entity.getPassword())) {
-            throw new BizException(ApiCode.BAD_REQUEST, "旧密码不正确");
+            throw new BizException(ApiCode.OLD_PASSWORD_INCORRECT);
         }
         entity.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userService.updateById(entity);
@@ -109,7 +109,7 @@ public class AuthServiceImpl implements AuthService {
     public UserVO getCurrentUserProfile() {
         Long userId = CurrentUserContext.getUserId();
         if (userId == null) {
-            throw new BizException(ApiCode.UNAUTHORIZED, "用户未登录");
+            throw new BizException(ApiCode.USER_NOT_LOGGED_IN);
         }
         return userService.getUserById(userId);
     }

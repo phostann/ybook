@@ -37,13 +37,13 @@ public class FileUploadServiceImpl implements FileUploadService {
         try {
             // 检查文件是否为空
             if (file.isEmpty()) {
-                throw new BizException(ApiCode.BAD_REQUEST, "文件不能为空");
+                throw new BizException(ApiCode.FILE_EMPTY);
             }
 
             // 获取原始文件名和扩展名
             String originalFilename = file.getOriginalFilename();
             if (originalFilename == null) {
-                throw new BizException(ApiCode.BAD_REQUEST, "文件名不能为空");
+                throw new BizException(ApiCode.FILE_NAME_EMPTY);
             }
 
             String extension = getFileExtension(originalFilename);
@@ -70,7 +70,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 
         } catch (Exception e) {
             log.error("文件上传失败: {}", e.getMessage(), e);
-            throw new BizException(ApiCode.INTERNAL_ERROR, "文件上传失败: " + e.getMessage());
+            throw new BizException(ApiCode.FILE_UPLOAD_FAILED, e.getMessage());
         }
     }
 
