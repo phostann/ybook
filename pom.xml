@@ -96,6 +96,11 @@
             <artifactId>minio</artifactId>
             <version>8.5.14</version>
         </dependency>
+        <!-- WebSocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
         <!-- JWT (jjwt 0.12.x) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

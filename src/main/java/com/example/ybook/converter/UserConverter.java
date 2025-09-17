@@ -20,11 +20,25 @@ public interface UserConverter {
     /**
      * UserEntity 转换为 UserVO
      */
+    @Mapping(target = "followingCount", ignore = true)
+    @Mapping(target = "followerCount", ignore = true)
+    @Mapping(target = "isFollowing", ignore = true)
     UserVO entityToVO(UserEntity entity);
+    
+    /**
+     * UserEntity 转换为 UserVO（简化版本，忽略额外字段）
+     */
+    @Mapping(target = "followingCount", ignore = true)
+    @Mapping(target = "followerCount", ignore = true)
+    @Mapping(target = "isFollowing", ignore = true)
+    UserVO toVO(UserEntity entity);
 
     /**
      * UserCreateDTO 转换为 UserEntity
      */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createTime", ignore = true)
+    @Mapping(target = "updateTime", ignore = true)
     @Mapping(target = "status", constant = "1")
     UserEntity createDTOToEntity(UserCreateDTO dto);
 
@@ -33,5 +47,9 @@ public interface UserConverter {
      */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "createTime", ignore = true)
+    @Mapping(target = "updateTime", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "status", ignore = true)
     UserEntity updateDTOToEntity(Long id, UserUpdateDTO dto);
 }

@@ -10,7 +10,9 @@ import com.example.ybook.dto.UserUpdateDTO;
 import com.example.ybook.entity.UserEntity;
 import com.example.ybook.mapper.UserMapper;
 import com.example.ybook.converter.UserConverter;
+import com.example.ybook.service.ChatRoomService;
 import com.example.ybook.service.UserService;
+import com.example.ybook.mapper.UserFollowMapper;
 import com.example.ybook.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +38,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     
     @Autowired
     private UserConverter userConverter;
+
+    @Autowired
+    private ChatRoomService chatRoomService;
+
+    @Autowired
+    private UserFollowMapper userFollowMapper;
 
     @Override
     public UserVO getUserById(Long id) {
@@ -133,7 +141,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     }
 
     @Override
+    @Transactional
     public boolean deleteUser(Long id) {
+        // 检查用户是否存在
+        UserEntity user = this.getById(id);
+        if (user == null) {
+            throw new BizException(ApiCode.USER_NOT_FOUND);
+        }
+
+        // 1. 删除用户相关的聊天数据（级联删除）
+        chatRoomService.deleteUserChatData(id);
+
+        // 2. 删除用户的关注关系数据
+        userFollowMapper.deleteByUserId(id);
+
+        // 3. 这里可以添加其他相关数据的删除逻辑
+        // 例如：删除用户的笔记、评论等
+
+        // 4. 最后删除用户本身
         return this.removeById(id);
     }
 }

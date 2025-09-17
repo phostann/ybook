@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.ybook.mapper.ChatMessageMapper">
+
+    <!-- 聊天消息实体结果映射 -->
+    <resultMap id="chatMessageResultMap" type="com.example.ybook.entity.ChatMessageEntity">
+        <id column="id" property="id"/>
+        <result column="room_id" property="roomId"/>
+        <result column="sender_id" property="senderId"/>
+        <result column="message_type" property="messageType"/>
+        <result column="content" property="content"/>
+        <result column="file_url" property="fileUrl"/>
+        <result column="file_name" property="fileName"/>
+        <result column="file_size" property="fileSize"/>
+        <result column="reply_to_id" property="replyToId"/>
+        <result column="sequence_id" property="sequenceId"/>
+        <result column="read_count" property="readCount"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 基础查询SQL片段 -->
+    <sql id="baseColumnList">
+        id, room_id, sender_id, message_type, content, file_url, file_name, file_size,
+        reply_to_id, sequence_id, read_count, status, create_time, update_time
+    </sql>
+
+    <!-- 获取最大序列号 -->
+    <select id="getMaxSequenceId" resultType="java.lang.Long">
+        SELECT COALESCE(MAX(sequence_id), 0) 
+        FROM y_chat_message 
+        WHERE room_id = #{roomId}
+    </select>
+
+    <!-- 分页查询聊天室消息 -->
+    <select id="selectPageByRoomId" resultMap="chatMessageResultMap">
+        SELECT <include refid="baseColumnList"/>
+        FROM y_chat_message
+        WHERE room_id = #{roomId} AND status = 'NORMAL'
+        ORDER BY sequence_id DESC
+    </select>
+
+    <!-- 增加已读数量 -->
+    <update id="incrementReadCount">
+        UPDATE y_chat_message 
+        SET read_count = read_count + 1 
+        WHERE id = #{messageId}
+    </update>
+
+</mapper>

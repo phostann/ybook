@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.ybook.mapper.UserOnlineStatusMapper">
+
+    <!-- 用户在线状态实体结果映射 -->
+    <resultMap id="userOnlineStatusResultMap" type="com.example.ybook.entity.UserOnlineStatusEntity">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="status" property="status"/>
+        <result column="last_active_time" property="lastActiveTime"/>
+        <result column="device_type" property="deviceType"/>
+        <result column="ip_address" property="ipAddress"/>
+        <result column="user_agent" property="userAgent"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 基础查询SQL片段 -->
+    <sql id="baseColumnList">
+        id, user_id, status, last_active_time, device_type, ip_address, 
+        user_agent, create_time, update_time
+    </sql>
+
+    <!-- 根据聊天室ID查询在线状态 -->
+    <select id="selectByRoomId" resultMap="userOnlineStatusResultMap">
+        SELECT <include refid="baseColumnList"/>
+        FROM y_user_online_status 
+        WHERE user_id IN (
+            SELECT user_id 
+            FROM y_chat_room_member 
+            WHERE room_id = #{roomId} AND status = 'ACTIVE'
+        )
+    </select>
+
+</mapper>

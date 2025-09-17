@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.ybook.mapper.ChatMessageStatusMapper">
+
+    <!-- 消息状态实体结果映射 -->
+    <resultMap id="chatMessageStatusResultMap" type="com.example.ybook.entity.ChatMessageStatusEntity">
+        <id column="id" property="id"/>
+        <result column="message_id" property="messageId"/>
+        <result column="user_id" property="userId"/>
+        <result column="status" property="status"/>
+        <result column="status_time" property="statusTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 基础查询SQL片段 -->
+    <sql id="baseColumnList">
+        id, message_id, user_id, status, status_time, create_time, update_time
+    </sql>
+
+    <!-- 这里可以添加自定义查询方法，目前使用MyBatis Plus的基础CRUD即可 -->
+
+</mapper>

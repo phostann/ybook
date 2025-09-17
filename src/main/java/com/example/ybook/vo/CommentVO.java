@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * 评论视图对象 VO（支持多层嵌套回复）
@@ -49,8 +48,6 @@ public class CommentVO {
     @Schema(description = "评论用户信息")
     private UserInfo user;
     
-    @Schema(description = "回复评论列表（仅根评论包含）")
-    private List<CommentVO> replies;
     
     @Schema(description = "是否被当前用户点赞", example = "false")
     private Boolean isLiked;

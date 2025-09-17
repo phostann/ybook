@@ -17,7 +17,6 @@ public interface CommentConverter {
      * 实体转换为VO
      */
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "replies", ignore = true)
     @Mapping(target = "isLiked", ignore = true)
     @Mapping(target = "replyToUser", ignore = true)
     @Mapping(target = "replyToContent", ignore = true)

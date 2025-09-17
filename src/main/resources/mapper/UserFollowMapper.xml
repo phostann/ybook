@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.ybook.mapper.UserFollowMapper">
+
+    <!-- 用户关注实体结果映射 -->
+    <resultMap id="userFollowResultMap" type="com.example.ybook.entity.UserFollowEntity">
+        <id column="id" property="id"/>
+        <result column="follower_id" property="followerId"/>
+        <result column="following_id" property="followingId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+<!-- 基础查询SQL片段 -->
+    <sql id="baseColumnList">
+        id, follower_id, following_id, status, create_time, update_time
+    </sql>
+
+    <!-- 根据关注者ID和被关注者ID查询关注关系 -->
+    <select id="selectByFollowerIdAndFollowingId" resultMap="userFollowResultMap">
+        SELECT <include refid="baseColumnList"/>
+        FROM y_user_follow
+        WHERE follower_id = #{followerId} AND following_id = #{followingId}
+    </select>
+
+    <!-- 批量查询用户对多个用户的关注状态 -->
+    <select id="selectBatchByFollowerIdAndFollowingIds" resultMap="userFollowResultMap">
+        SELECT <include refid="baseColumnList"/>
+        FROM y_user_follow
+        WHERE follower_id = #{followerId}
+        AND following_id IN
+        <foreach collection="followingIds" item="followingId" open="(" separator="," close=")">
+            #{followingId}
+        </foreach>
+    </select>
+
+    <!-- 分页查询用户的关注列表（我关注的人）-->
+    <select id="selectFollowingIdsByFollowerId" resultType="java.lang.Long">
+        SELECT following_id
+        FROM y_user_follow
+        WHERE follower_id = #{followerId} AND status = 1
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 分页查询用户的粉丝列表（关注我的人）-->
+    <select id="selectFollowerIdsByFollowingId" resultType="java.lang.Long">
+        SELECT follower_id
+        FROM y_user_follow
+        WHERE following_id = #{followingId} AND status = 1
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 统计用户的关注数（我关注的人数）-->
+    <select id="countFollowingByFollowerId" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM y_user_follow
+        WHERE follower_id = #{followerId} AND status = 1
+    </select>
+
+    <!-- 统计用户的粉丝数（关注我的人数）-->
+    <select id="countFollowersByFollowingId" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM y_user_follow
+        WHERE following_id = #{followingId} AND status = 1
+    </select>
+
+    <!-- 根据用户ID删除所有相关的关注记录（清理用户数据时使用）-->
+    <delete id="deleteByUserId">
+        DELETE FROM y_user_follow
+        WHERE follower_id = #{userId} OR following_id = #{userId}
+    </delete>
+
+</mapper>

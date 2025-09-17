@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.ybook.mapper.ChatRoomMemberMapper">
+
+    <!-- 聊天室成员实体结果映射 -->
+    <resultMap id="chatRoomMemberResultMap" type="com.example.ybook.entity.ChatRoomMemberEntity">
+        <id column="id" property="id"/>
+        <result column="room_id" property="roomId"/>
+        <result column="user_id" property="userId"/>
+        <result column="role" property="role"/>
+        <result column="nickname" property="nickname"/>
+        <result column="mute_until" property="muteUntil"/>
+        <result column="join_time" property="joinTime"/>
+        <result column="last_read_time" property="lastReadTime"/>
+        <result column="unread_count" property="unreadCount"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 基础查询SQL片段 -->
+    <sql id="baseColumnList">
+        id, room_id, user_id, role, nickname, mute_until, join_time, 
+        last_read_time, unread_count, status, create_time, update_time
+    </sql>
+
+    <!-- 根据聊天室ID查询活跃成员 -->
+    <select id="selectActiveByRoomId" resultMap="chatRoomMemberResultMap">
+        SELECT <include refid="baseColumnList"/>
+        FROM y_chat_room_member
+        WHERE room_id = #{roomId} AND status = 'ACTIVE'
+    </select>
+
+    <!-- 根据聊天室ID和用户ID查询成员 -->
+    <select id="selectByRoomIdAndUserId" resultMap="chatRoomMemberResultMap">
+        SELECT <include refid="baseColumnList"/>
+        FROM y_chat_room_member
+        WHERE room_id = #{roomId} AND user_id = #{userId}
+    </select>
+
+    <!-- 增加未读消息数 -->
+    <update id="incrementUnreadCount">
+        UPDATE y_chat_room_member 
+        SET unread_count = unread_count + 1
+        WHERE room_id = #{roomId} AND user_id != #{senderId} AND status = 'ACTIVE'
+    </update>
+
+    <!-- 标记为已读 -->
+    <update id="markAsRead">
+        UPDATE y_chat_room_member 
+        SET unread_count = 0, last_read_time = NOW()
+        WHERE room_id = #{roomId} AND user_id = #{userId}
+    </update>
+
+</mapper>
